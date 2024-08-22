@@ -1,6 +1,8 @@
 # Use a imagem base do Python
 FROM python:3.11-slim
 
+EXPOSE 8080
+
 # Define o diretório de trabalho
 WORKDIR /app
 
