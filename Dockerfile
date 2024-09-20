@@ -4,6 +4,8 @@ FROM python:3.11-slim
 RUN pip install flask
 # Instala GCP Cloud Storage
 RUN pip install google-cloud-storage
+RUN pip install google-cloud-storage
+RUN pip install python-dotenv
 # Define o diretório de trabalho
 WORKDIR /app
 # Copia o script para o contêiner
