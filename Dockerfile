@@ -10,8 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Definir o diretório de trabalho
 WORKDIR /app
 
-# Expor a porta 8080
-EXPOSE 8080
-
 # Comando para rodar o functions-framework e a função main
-CMD ["functions-framework", "--target=main", "--port=8080"]
+CMD ["functions-framework", "--target=main"]
