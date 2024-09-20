@@ -62,7 +62,7 @@ def handle_event(request: Request):
         
         client = Client(project=JSON_PROJECT_ID, credentials=_get_credentials_gcp())
 
-        print(f'download file: {event['bucket']}')
+        print(f"download file: {event['bucket']}")
         _download_storage(client, event['bucket'], event['name'])
 
         print(f'upload file to: {BUCKET_OUTPUT}')
