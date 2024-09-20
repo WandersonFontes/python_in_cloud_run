@@ -9,6 +9,7 @@ load_dotenv()
 
 STORAGE_NAME: str = os.getenv('STORAGE_NAME')
 BUCKET_NAME: str = os.getenv('BUCKET_NAME')
+BUCKET_OUTPUT: str = os.getenv('BUCKET_OUTPUT')
 JSON_PRIVATE_KEY_ID: str = os.getenv('JSON_PRIVATE_KEY_ID')
 JSON_PRIVATE_KEY: str = os.getenv('JSON_PRIVATE_KEY')
 JSON_CLIENT_EMAIL: str = os.getenv('JSON_CLIENT_EMAIL')
@@ -36,35 +37,36 @@ def _get_credentials_gcp():
     credentials = service_account.Credentials.from_service_account_info(creds)
     return credentials
 
-CREDENTIALS_GCP = _get_credentials_gcp()
-
-def _download_storage(bucket_name: str, file_name: str) -> None:
-    client = Client(project=JSON_PROJECT_ID, credentials=CREDENTIALS_GCP)
+def _download_storage(client, bucket_name: str, file_name: str) -> None:
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(file_name)
     blob.download_to_filename(file_name)
 
-def _upload_file_to_drive(bucket_name: str, file_name: str) -> None:
-    client = Client(project=JSON_PROJECT_ID, credentials=CREDENTIALS_GCP)
+def _upload_file_to_drive(client, bucket_name: str, file: str) -> None:
+    file_path = Path(Path(file)).resolve()
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
 
-    file_path = Path(Path('test_file.txt')).resolve()
-    with open(file_path, 'rb') as file:
-        file_content = file.read()
     file_content = io.BytesIO(file_content)
-    bucket = client.bucket(BUCKET_NAME)
-    blob = bucket.blob('test_file.txt')
+
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(file)
     blob.upload_from_file(file_content, num_retries=3, timeout=300)
-    # return 'Upload realizado com sucesso!'
 
 def handle_event(request: Request):
     try:
         event = request.get_json()
         if not event:
             return jsonify({"error": "Invalid event format"}), 400
-
         print("Received event:", event)
-        _download_storage(event['bucket'], event['name'])
-        _upload_file_to_drive(event['bucket'], event['name'])
+        
+        client = Client(project=JSON_PROJECT_ID, credentials=_get_credentials_gcp())
+
+        print(f'download file: {event['bucket']}')
+        _download_storage(client, event['bucket'], event['name'])
+
+        print(f'upload file to: {BUCKET_OUTPUT}')
+        _upload_file_to_drive(client, BUCKET_OUTPUT, event['name'])
 
         return jsonify({"message": "Event received successfully!"}), 200
     except Exception as e:
