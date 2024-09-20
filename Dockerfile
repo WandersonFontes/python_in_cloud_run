@@ -1,16 +1,12 @@
 # Use a imagem base do Python
 FROM python:3.11-slim
-# Instala Flask
-RUN pip install flask
-# Instala GCP Cloud Storage
-RUN pip install google-cloud-storage
-RUN pip install google-cloud-storage
-RUN pip install python-dotenv
-# Define o diretório de trabalho
-WORKDIR /app
-# Copia o script para o contêiner
+
 COPY . .
-# Exponha a porta 8080
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+WORKDIR /app
+
 EXPOSE 8080
-# Comando para executar o script
-CMD ["python", "main.py"]
+
+CMD ["functions-framework", "--target=process_event", "--port=8080"]
