@@ -9,6 +9,6 @@ WORKDIR /app
 # Copia o script para o contêiner
 COPY . .
 # Exponha a porta 8080
-EXPOSE 8081
+EXPOSE 8080
 # Comando para executar o script
 CMD ["python", "main.py"]
