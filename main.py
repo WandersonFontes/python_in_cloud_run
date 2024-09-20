@@ -1,13 +1,8 @@
-import re, os, io
+import re, os
 from dotenv import load_dotenv
 from google.oauth2 import service_account
 from google.cloud.storage import Client
-from googleapiclient.http import MediaFileUpload
-from googleapiclient.discovery import build
 import functions_framework
-from flask import Flask
-from time import sleep
-from pathlib import Path
 
 load_dotenv()
 
@@ -47,40 +42,10 @@ def download_storage(bucket_name, file_name):
     blob = bucket.blob(file_name)
     blob.download_to_filename(file_name)
 
-def upload_file_to_drive(file_path, drive_folder_id=None):
-    """Faz upload de um arquivo para o Google Drive."""
-    creds = get_credentials_gcp()
-
-    try:
-        # Cria o serviço do Google Drive
-        service = build('drive', 'v3', credentials=creds)
-
-        user_info = service.about().get(fields="user").execute()
-        print(user_info)
-        
-        # Define o arquivo a ser enviado
-        file_metadata = {'name': os.path.basename(file_path)}
-        if drive_folder_id:
-            file_metadata['parents'] = [drive_folder_id]
-        
-        media = MediaFileUpload(file_path, resumable=True)
-        
-        # Faz o upload do arquivo
-        file = service.files().create(
-            body=file_metadata, media_body=media, fields='id'
-        ).execute()
-        
-        print(f"Arquivo enviado com sucesso ao Google Drive com ID: {file.get('id')}")
-    
-    except Exception as e:
-        print(f"Erro ao fazer upload para o Google Drive: {e}")
-
 @functions_framework.cloud_event
 def main(event) -> None:
     dados: dict = event.data
     print(dados['bucket'])
-    # download_storage(dados['bucket'], dados['name'])
-    # upload_file_to_drive(dados['name'], GOOGLE_DRIVER_FOLDER_ID)
 
 if __name__ == "__main__":
     main({"bucket":"", "name": ""})
