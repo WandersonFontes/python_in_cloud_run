@@ -7,8 +7,8 @@ RUN pip install google-cloud-storage
 # Define o diretório de trabalho
 WORKDIR /app
 # Copia o script para o contêiner
-COPY main.py main.py
+COPY . .
 # Exponha a porta 8080
-EXPOSE 8080
+EXPOSE 8081
 # Comando para executar o script
 CMD ["python", "main.py"]
