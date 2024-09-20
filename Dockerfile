@@ -2,6 +2,8 @@
 FROM python:3.11-slim
 # Instala Flask
 RUN pip install flask
+# Instala GCP Cloud Storage
+RUN pip install google-cloud-storage
 # Define o diretório de trabalho
 WORKDIR /app
 # Copia o script para o contêiner
