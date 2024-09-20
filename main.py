@@ -1,10 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Request, jsonify
 
-app = Flask(__name__)
-
-@app.route('/event', methods=['POST'])
-def handle_event():
+def handle_event(request: Request):
     try:
+        # Parse JSON request body
         event = request.get_json()
         if not event:
             return jsonify({"error": "Invalid event format"}), 400
@@ -12,10 +10,7 @@ def handle_event():
         # Print the received event
         print("Received event:", event)
 
-        # Optionally, return a response
+        # Return a success response
         return jsonify({"message": "Event received successfully!"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)

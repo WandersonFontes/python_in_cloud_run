@@ -1,4 +1,4 @@
 google-cloud-storage
 python-dotenv
 flask
-functions_framework
+functions-framework==3.5.0
